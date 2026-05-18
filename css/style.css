@@ -1,0 +1,13 @@
+/**
+ * @fileoverview Hoja de estilos principal.
+ * Actúa como índice, importando todos los módulos de forma ordenada.
+ */
+
+/* 1. Base y Variables */
+@import url("base.css");
+
+/* 2. Componentes de UI */
+@import url("components/cards.css");
+
+/* 3. Efecto del header */
+@import url("components/header.css");

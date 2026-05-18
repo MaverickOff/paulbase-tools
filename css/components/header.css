@@ -1,0 +1,42 @@
+/* ==========================================================================
+   EFECTO DEL HEADER - TÍTULO PLATINADO
+   ========================================================================== */
+
+/* 1. El ESTADO: Nace transparente y con el gradiente preparado */
+.efecto-platinado {
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  background-image: linear-gradient(
+    to right,
+    #4d4d4d 0%,
+    #4d4d4d 40%,
+    #ffffff 50%,
+    #4d4d4d 60%,
+    #4d4d4d 100%
+  );
+  background-size: 200% auto;
+  background-position: 200% 0;
+}
+
+/* 2. LA ACCIÓN: Solo se ejecuta cuando JS añade esta clase */
+.efecto-platinado.animar {
+  animation: brilloImpacto 1.5s ease-out forwards;
+}
+
+@keyframes brilloImpacto {
+  0% {
+    background-position: 200% 0;
+    -webkit-text-fill-color: transparent;
+  }
+  70% {
+    background-position: 0% 0;
+    -webkit-text-fill-color: transparent;
+  }
+  100% {
+    background-position: -200% 0;
+    /* Estado final: Blanco sólido */
+    -webkit-text-fill-color: #ffffff;
+  }
+}

@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta
+      name="description"
+      content="Genera contraseñas seguras con entropía criptográfica y hashes (SHA-1, SHA-256, SHA-512) usando la Web Crypto API."
+    />
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE='; connect-src 'self' https://cdn.jsdelivr.net; base-uri 'self'; form-action 'self';" />
+    <title>Generador de Contraseñas y Hashes | Paulbase Tools</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="tool-layout">
+      <header class="tool-header-bar">
+        <a href="../../" class="back-link">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M15 18l-6-6 6-6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Volver
+        </a>
+        <div class="tool-brand">
+          <span class="tool-title">Paulbase Tools</span>
+        </div>
+      </header>
+
+      <main class="tool-content-area">
+        <div class="password-hash-tool">
+          <div class="pht-header">
+            <div class="pht-header-icon">🔐</div>
+            <h1 class="pht-header-title">
+              Generador de Contraseñas y Hashes
+              <span class="tool-version">v.1.0.0</span>
+            </h1>
+
+            <p class="pht-header-desc">
+              Contraseñas seguras con entropía criptográfica y hashes (SHA-1,
+              SHA-256, SHA-512).
+            </p>
+          </div>
+
+          <div class="pht-grid">
+            <!-- Generador de Contraseñas -->
+            <section class="pht-card">
+              <div class="pht-card-header">
+                <span class="pht-card-icon">🔑</span>
+                <h2 class="pht-card-title">Generador de Contraseñas</h2>
+              </div>
+
+              <div class="pht-card-body">
+                <!-- Display de contraseña -->
+                <div class="pht-password-display">
+                  <input
+                    type="text"
+                    id="passwordOutput"
+                    class="pht-password-input"
+                    readonly
+                    value=""
+                    placeholder="Tu contraseña segura aparecerá aquí..."
+                    aria-label="Contraseña generada"
+                    autocomplete="off"
+                    spellcheck="false"
+                    autocorrect="off"
+                  />
+                  <button
+                    type="button"
+                    class="pht-copy-btn"
+                    data-copy-target="passwordOutput"
+                    aria-label="Copiar contraseña"
+                    title="Copiar contraseña"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                      <path
+                        d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                      />
+                    </svg>
+                    <span class="pht-copy-text">Copiar</span>
+                  </button>
+                </div>
+
+                <!-- Slider de longitud -->
+                <div class="pht-length-control">
+                  <div class="pht-length-labels">
+                    <label for="passwordLength" class="pht-label"
+                      >Longitud</label
+                    >
+                    <output
+                      for="passwordLength"
+                      id="lengthValue"
+                      class="pht-length-value"
+                      >16</output
+                    >
+                  </div>
+                  <div class="pht-length-slider-row">
+                    <input
+                      type="range"
+                      id="passwordLength"
+                      class="pht-range-slider"
+                      min="8"
+                      max="64"
+                      value="16"
+                      aria-label="Longitud de la contraseña"
+                    />
+                    <input
+                      type="number"
+                      id="lengthNumber"
+                      class="pht-length-number"
+                      min="8"
+                      max="64"
+                      value="16"
+                      aria-label="Longitud numérica"
+                    />
+                  </div>
+                </div>
+
+                <!-- Checkboxes de opciones -->
+                <div class="pht-options-group">
+                  <label class="pht-option-item">
+                    <input type="checkbox" id="useUppercase" checked />
+                    <span class="pht-option-check" aria-hidden="true"></span>
+                    <span class="pht-option-label">Mayúsculas (A-Z)</span>
+                  </label>
+                  <label class="pht-option-item">
+                    <input type="checkbox" id="useLowercase" checked />
+                    <span class="pht-option-check" aria-hidden="true"></span>
+                    <span class="pht-option-label">Minúsculas (a-z)</span>
+                  </label>
+                  <label class="pht-option-item">
+                    <input type="checkbox" id="useNumbers" checked />
+                    <span class="pht-option-check" aria-hidden="true"></span>
+                    <span class="pht-option-label">Números (0-9)</span>
+                  </label>
+                  <label class="pht-option-item">
+                    <input type="checkbox" id="useSymbols" checked />
+                    <span class="pht-option-check" aria-hidden="true"></span>
+                    <span class="pht-option-label">Símbolos (!@#$...)</span>
+                  </label>
+                </div>
+
+                <!-- Botón generar -->
+                <button type="button" id="generateBtn" class="pht-generate-btn">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M21 2v6h-6" />
+                    <path d="M3 12a9 9 0 0115-6.7L21 8" />
+                    <path d="M3 22v-6h6" />
+                    <path d="M21 12a9 9 0 01-15 6.7L3 16" />
+                  </svg>
+                  Generar Contraseña
+                </button>
+              </div>
+            </section>
+
+            <!-- Generador de Hashes -->
+            <section class="pht-card">
+              <div class="pht-card-header">
+                <span class="pht-card-icon">🧬</span>
+                <h2 class="pht-card-title">Generador de Hashes</h2>
+              </div>
+
+              <div class="pht-card-body">
+                <!-- Input de texto -->
+                <div class="pht-hash-input-group">
+                  <label for="hashInput" class="pht-label"
+                    >Texto a hashear</label
+                  >
+                  <textarea
+                    id="hashInput"
+                    class="pht-hash-textarea"
+                    rows="4"
+                    placeholder="Escribe o pega aquí el texto que quieres hashear..."
+                    aria-label="Texto a hashear"
+                    autocomplete="off"
+                    spellcheck="false"
+                    autocorrect="off"
+                  ></textarea>
+                </div>
+
+                <!-- Resultados de hash -->
+                <div class="pht-hash-results">
+                  <div class="pht-hash-result-item">
+                    <label class="pht-hash-label">
+                      <span class="pht-hash-name">SHA-1</span>
+                      <span class="pht-hash-bits">160 bits</span>
+                    </label>
+                    <div class="pht-hash-output-wrapper">
+                      <input
+                        type="text"
+                        id="sha1Output"
+                        class="pht-hash-output"
+                        readonly
+                        value=""
+                        aria-label="Hash SHA-1"
+                      />
+                      <button
+                        type="button"
+                        class="pht-copy-btn-sm"
+                        data-copy-target="sha1Output"
+                        aria-label="Copiar SHA-1"
+                        title="Copiar SHA-1"
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <rect
+                            x="9"
+                            y="9"
+                            width="13"
+                            height="13"
+                            rx="2"
+                            ry="2"
+                          />
+                          <path
+                            d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="pht-hash-result-item">
+                    <label class="pht-hash-label">
+                      <span class="pht-hash-name">SHA-256</span>
+                      <span class="pht-hash-bits">256 bits</span>
+                    </label>
+                    <div class="pht-hash-output-wrapper">
+                      <input
+                        type="text"
+                        id="sha256Output"
+                        class="pht-hash-output"
+                        readonly
+                        value=""
+                        aria-label="Hash SHA-256"
+                      />
+                      <button
+                        type="button"
+                        class="pht-copy-btn-sm"
+                        data-copy-target="sha256Output"
+                        aria-label="Copiar SHA-256"
+                        title="Copiar SHA-256"
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <rect
+                            x="9"
+                            y="9"
+                            width="13"
+                            height="13"
+                            rx="2"
+                            ry="2"
+                          />
+                          <path
+                            d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="pht-hash-result-item">
+                    <label class="pht-hash-label">
+                      <span class="pht-hash-name">SHA-512</span>
+                      <span class="pht-hash-bits">512 bits</span>
+                    </label>
+                    <div class="pht-hash-output-wrapper">
+                      <input
+                        type="text"
+                        id="sha512Output"
+                        class="pht-hash-output"
+                        readonly
+                        value=""
+                        aria-label="Hash SHA-512"
+                      />
+                      <button
+                        type="button"
+                        class="pht-copy-btn-sm"
+                        data-copy-target="sha512Output"
+                        aria-label="Copiar SHA-512"
+                        title="Copiar SHA-512"
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <rect
+                            x="9"
+                            y="9"
+                            width="13"
+                            height="13"
+                            rx="2"
+                            ry="2"
+                          />
+                          <path
+                            d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
