@@ -1,6 +1,6 @@
 /* ==========================================================================
-   LAYOUT BASE DE HERRAMIENTAS
-   ========================================================================== */
+LAYOUT BASE DE HERRAMIENTAS
+========================================================================== */
 
 .tool-layout {
   min-height: 100dvh;
@@ -10,9 +10,9 @@
   color: var(--text-main);
 }
 
-/* ==========================================================================
-   BARRA DE NAVEGACIÓN SUPERIOR
-   ========================================================================== */
+/* --------------------------------------------------------------------------
+BARRA DE NAVEGACION SUPERIOR
+-------------------------------------------------------------------------- */
 
 .tool-header-bar {
   display: flex;
@@ -55,73 +55,598 @@
   color: var(--text-main);
 }
 
-/* ==========================================================================
-   ÁREA DE CONTENIDO DE LA HERRAMIENTA
-   ========================================================================== */
+.tool-brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.tool-version {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  letter-spacing: 0.03em;
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+AREA DE CONTENIDO DE LA HERRAMIENTA
+-------------------------------------------------------------------------- */
 
 .tool-content-area {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: 2rem;
-}
-
-.tool-hero {
-  text-align: center;
-  max-width: 600px;
-  padding: 2rem;
-}
-
-.tool-hero-icon {
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
-  line-height: 1;
-}
-
-.tool-hero-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: var(--text-main);
-}
-
-.tool-hero-desc {
-  font-size: 1.1rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin-bottom: 2rem;
-}
-
-.coming-soon-badge {
-  display: inline-block;
-  background: var(--primary-gradient);
-  color: #000;
-  font-weight: 600;
-  font-size: 0.9rem;
-  padding: 0.5rem 1.25rem;
-  border-radius: 12px;
 }
 
 /* ==========================================================================
-   RESPONSIVE
-   ========================================================================== */
+LINUX PERMISSIONS TOOL - Encapsulated Styles
+All selectors prefixed with .lpt-* to avoid global conflicts.
+========================================================================== */
+
+/* --------------------------------------------------------------------------
+Root container
+-------------------------------------------------------------------------- */
+
+.lpt-container {
+  width: 100%;
+  max-width: 720px;
+  padding: 1.5rem;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+Header
+-------------------------------------------------------------------------- */
+
+.lpt-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.lpt-header-icon {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.lpt-header-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.lpt-header-desc {
+  font-size: 1rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+Card component
+-------------------------------------------------------------------------- */
+
+.lpt-card {
+  background: var(--surface-color, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.lpt-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem 0;
+}
+
+.lpt-card-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.lpt-card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.lpt-card-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+Permission Matrix
+-------------------------------------------------------------------------- */
+
+.lpt-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.lpt-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lpt-group-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.lpt-group-value {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  line-height: 1;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lpt-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+Toggle buttons
+-------------------------------------------------------------------------- */
+
+.lpt-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  background: var(--input-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--input-border, rgba(255, 255, 255, 0.1));
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  user-select: none;
+}
+
+.lpt-toggle:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.lpt-toggle:active {
+  transform: scale(0.97);
+}
+
+.lpt-toggle[aria-pressed="true"] {
+  background: rgba(0, 230, 118, 0.12);
+  border-color: var(--primary-color);
+}
+
+.lpt-toggle[aria-pressed="true"] .lpt-toggle-letter {
+  color: var(--primary-color);
+}
+
+.lpt-toggle[aria-pressed="true"] .lpt-toggle-bit {
+  color: var(--primary-color);
+  background: rgba(0, 230, 118, 0.15);
+}
+
+.lpt-toggle-letter {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  width: 1.2rem;
+  text-align: center;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.lpt-toggle-name {
+  flex: 1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.lpt-toggle-bit {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+/* --------------------------------------------------------------------------
+Notation inputs
+-------------------------------------------------------------------------- */
+
+.lpt-notation-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.lpt-notation-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.lpt-notation-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lpt-notation-input-wrapper {
+  display: flex;
+  gap: 0.4rem;
+  align-items: stretch;
+}
+
+.lpt-notation-input {
+  flex: 1;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0.7rem 0.85rem;
+  background: var(--input-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--input-border, rgba(255, 255, 255, 0.1));
+  border-radius: 10px;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.2s ease;
+  min-width: 0;
+}
+
+.lpt-notation-input--mono {
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+}
+
+.lpt-notation-input:focus {
+  border-color: var(--primary-color);
+}
+
+.lpt-notation-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* --------------------------------------------------------------------------
+Copy buttons (small)
+-------------------------------------------------------------------------- */
+
+.lpt-copy-btn-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: var(--input-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--input-border, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  flex-shrink: 0;
+}
+
+.lpt-copy-btn-sm:hover {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.lpt-copy-btn-sm:active {
+  transform: scale(0.95);
+}
+
+.lpt-copy-btn-sm.copied {
+  color: #28a745;
+  border-color: #28a745;
+}
+
+/* --------------------------------------------------------------------------
+chmod command preview
+-------------------------------------------------------------------------- */
+
+.lpt-chmod-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lpt-chmod-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lpt-chmod-command {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.lpt-chmod-code {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-color, #20c997);
+  padding: 0.5rem 0.85rem;
+  background: rgba(32, 201, 151, 0.08);
+  border: 1px solid rgba(32, 201, 151, 0.2);
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+Presets
+-------------------------------------------------------------------------- */
+
+.lpt-presets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.lpt-preset-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 0.5rem;
+  background: var(--input-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--input-border, rgba(255, 255, 255, 0.1));
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+
+.lpt-preset-btn:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.lpt-preset-btn:active {
+  transform: scale(0.97);
+}
+
+.lpt-preset-octal {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--primary-color);
+}
+
+.lpt-preset-name {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* --------------------------------------------------------------------------
+Responsive — Tablet (768px) and below
+-------------------------------------------------------------------------- */
 
 @media (max-width: 768px) {
   .tool-header-bar {
     padding: 0.75rem 1rem;
   }
 
-  .tool-hero {
+  .tool-content-area {
     padding: 1rem;
+    overflow-x: hidden;
   }
 
-  .tool-hero-title {
-    font-size: 1.5rem;
+  .lpt-container {
+    padding: 1rem;
+    max-width: 100%;
   }
 
-  .tool-hero-desc {
+  .lpt-header-title {
+    font-size: 1.4rem;
+  }
+
+  .lpt-header-desc {
+    font-size: 0.9rem;
+  }
+
+  .lpt-card-body {
+    padding: 1.25rem 1rem;
+    gap: 1.75rem;
+  }
+
+  /* Stack matrix vertically: Owner -> Group -> Public */
+  .lpt-matrix {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .lpt-group {
+    width: 100%;
+  }
+
+  /* Horizontal toggle row per group on mobile */
+  .lpt-toggles {
+    flex-direction: row;
+    gap: 0.6rem;
+  }
+
+  /* 44px minimum touch target for toggles */
+  .lpt-toggle {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    border-radius: 12px;
+  }
+
+  .lpt-toggle-letter {
+    font-size: 1.15rem;
+    width: auto;
+  }
+
+  .lpt-toggle-name {
+    font-size: 0.65rem;
+    text-align: center;
+  }
+
+  .lpt-toggle-bit {
+    font-size: 0.6rem;
+    padding: 0.1rem 0.3rem;
+  }
+
+  .lpt-group-value {
+    font-size: 1.75rem;
+    min-height: 2rem;
+  }
+
+  .lpt-group-label {
+    font-size: 0.9rem;
+  }
+
+  .lpt-notation-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .lpt-notation-label {
+    font-size: 0.85rem;
+  }
+
+  .lpt-notation-input {
     font-size: 1rem;
+    padding: 0.75rem 0.85rem;
+  }
+
+  /* 44px touch target for copy buttons */
+  .lpt-copy-btn-sm {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-radius: 10px;
+  }
+
+  .lpt-chmod-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .lpt-chmod-label {
+    text-align: center;
+  }
+
+  .lpt-chmod-command {
+    justify-content: center;
+  }
+
+  .lpt-chmod-code {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  .lpt-presets {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+  }
+
+  /* 44px minimum touch target for preset buttons */
+  .lpt-preset-btn {
+    min-height: 60px;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .lpt-preset-octal {
+    font-size: 1rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+Responsive — Small phones (400px) and below
+-------------------------------------------------------------------------- */
+
+@media (max-width: 400px) {
+  .lpt-container {
+    padding: 0.75rem;
+  }
+
+  .lpt-card-body {
+    padding: 1rem 0.75rem;
+    gap: 1.5rem;
+  }
+
+  .lpt-header-title {
+    font-size: 1.2rem;
+  }
+
+  .lpt-toggles {
+    gap: 0.4rem;
+  }
+
+  .lpt-toggle {
+    gap: 0.1rem;
+    border-radius: 10px;
+  }
+
+  .lpt-toggle-letter {
+    font-size: 1rem;
+  }
+
+  .lpt-toggle-name {
+    font-size: 0.6rem;
+  }
+
+  .lpt-toggle-bit {
+    display: none;
+  }
+
+  .lpt-presets {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .lpt-group-value {
+    font-size: 1.5rem;
   }
 }

@@ -1,50 +1,238 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <meta
-      name="description"
-      content="Traductor Visual de Permisos Linux / chmod. Convierte notación numérica a simbólica y viceversa."
-    />
-    <meta http-equiv="Content-Security-Policy"
-      content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE='; connect-src 'self' https://cdn.jsdelivr.net; base-uri 'self'; form-action 'self';" />
-    <title>Traductor Visual de Permisos Linux | Paulbase Tools</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet" href="../../css/style.css" />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="tool-layout">
-      <header class="tool-header-bar">
-        <a href="../../" class="back-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Volver
-        </a>
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <meta
+    name="description"
+    content="Traductor Visual de Permisos Linux / chmod. Convierte notación numérica a simbólica y viceversa."
+  />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE='; connect-src 'self' https://cdn.jsdelivr.net; base-uri 'self'; form-action 'self';" />
+  <title>Traductor Visual de Permisos Linux | Paulbase Tools</title>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+    crossorigin="anonymous"
+  />
+  <link rel="stylesheet" href="../../css/style.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="tool-layout">
+    <header class="tool-header-bar">
+      <a href="../../" class="back-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Volver
+      </a>
+      <div class="tool-brand">
         <span class="tool-title">Paulbase Tools</span>
-      </header>
+      </div>
+    </header>
 
-      <main class="tool-content-area">
-        <div class="tool-hero">
-          <div class="tool-hero-icon">🐧</div>
-          <h1 class="tool-hero-title">Traductor Visual de Permisos Linux</h1>
-          <p class="tool-hero-desc">
-            Convierte notación numérica (777) a simbólica (rwxrwxrwx) y viceversa.
-            Visualización interactiva con colores.
+    <main class="tool-content-area">
+      <div class="lpt-container">
+        <!-- Header -->
+        <div class="lpt-header">
+          <div class="lpt-header-icon">🐧</div>
+          <h1 class="lpt-header-title">
+            Traductor Visual de Permisos Linux
+            <span class="tool-version">v.1.0.0</span>
+          </h1>
+          <p class="lpt-header-desc">
+            Convierte notación numérica (755) a simbólica (rwxr-xr-x) y viceversa.
+            Interactivo en tiempo real.
           </p>
-          <span class="coming-soon-badge">En desarrollo</span>
         </div>
-      </main>
-    </div>
-  </body>
+
+        <!-- Permission Matrix -->
+        <section class="lpt-card">
+          <div class="lpt-card-header">
+            <span class="lpt-card-icon">🔢</span>
+            <h2 class="lpt-card-title">Matriz de Permisos</h2>
+          </div>
+
+          <div class="lpt-card-body">
+            <div class="lpt-matrix">
+              <!-- Owner -->
+              <div class="lpt-group">
+                <div class="lpt-group-label">Propietario</div>
+                <div class="lpt-group-value" id="ownerValue">0</div>
+                <div class="lpt-toggles">
+                  <button type="button" class="lpt-toggle" data-group="owner" data-perm="read" data-bit="4" aria-label="Lectura del propietario" aria-pressed="false">
+                    <span class="lpt-toggle-letter">r</span>
+                    <span class="lpt-toggle-name">Lectura</span>
+                    <span class="lpt-toggle-bit">4</span>
+                  </button>
+                  <button type="button" class="lpt-toggle" data-group="owner" data-perm="write" data-bit="2" aria-label="Escritura del propietario" aria-pressed="false">
+                    <span class="lpt-toggle-letter">w</span>
+                    <span class="lpt-toggle-name">Escritura</span>
+                    <span class="lpt-toggle-bit">2</span>
+                  </button>
+                  <button type="button" class="lpt-toggle" data-group="owner" data-perm="execute" data-bit="1" aria-label="Ejecución del propietario" aria-pressed="false">
+                    <span class="lpt-toggle-letter">x</span>
+                    <span class="lpt-toggle-name">Ejecución</span>
+                    <span class="lpt-toggle-bit">1</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Group -->
+              <div class="lpt-group">
+                <div class="lpt-group-label">Grupo</div>
+                <div class="lpt-group-value" id="groupValue">0</div>
+                <div class="lpt-toggles">
+                  <button type="button" class="lpt-toggle" data-group="group" data-perm="read" data-bit="4" aria-label="Lectura del grupo" aria-pressed="false">
+                    <span class="lpt-toggle-letter">r</span>
+                    <span class="lpt-toggle-name">Lectura</span>
+                    <span class="lpt-toggle-bit">4</span>
+                  </button>
+                  <button type="button" class="lpt-toggle" data-group="group" data-perm="write" data-bit="2" aria-label="Escritura del grupo" aria-pressed="false">
+                    <span class="lpt-toggle-letter">w</span>
+                    <span class="lpt-toggle-name">Escritura</span>
+                    <span class="lpt-toggle-bit">2</span>
+                  </button>
+                  <button type="button" class="lpt-toggle" data-group="group" data-perm="execute" data-bit="1" aria-label="Ejecución del grupo" aria-pressed="false">
+                    <span class="lpt-toggle-letter">x</span>
+                    <span class="lpt-toggle-name">Ejecución</span>
+                    <span class="lpt-toggle-bit">1</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Public -->
+              <div class="lpt-group">
+                <div class="lpt-group-label">Público</div>
+                <div class="lpt-group-value" id="publicValue">0</div>
+                <div class="lpt-toggles">
+                  <button type="button" class="lpt-toggle" data-group="public" data-perm="read" data-bit="4" aria-label="Lectura del público" aria-pressed="false">
+                    <span class="lpt-toggle-letter">r</span>
+                    <span class="lpt-toggle-name">Lectura</span>
+                    <span class="lpt-toggle-bit">4</span>
+                  </button>
+                  <button type="button" class="lpt-toggle" data-group="public" data-perm="write" data-bit="2" aria-label="Escritura del público" aria-pressed="false">
+                    <span class="lpt-toggle-letter">w</span>
+                    <span class="lpt-toggle-name">Escritura</span>
+                    <span class="lpt-toggle-bit">2</span>
+                  </button>
+                  <button type="button" class="lpt-toggle" data-group="public" data-perm="execute" data-bit="1" aria-label="Ejecución del público" aria-pressed="false">
+                    <span class="lpt-toggle-letter">x</span>
+                    <span class="lpt-toggle-name">Ejecución</span>
+                    <span class="lpt-toggle-bit">1</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notation inputs -->
+            <div class="lpt-notation-section">
+              <div class="lpt-notation-group">
+                <label for="lptOctalInput" class="lpt-notation-label">Notación Numérica (Octal)</label>
+                <div class="lpt-notation-input-wrapper">
+                  <input
+                    type="text"
+                    id="lptOctalInput"
+                    class="lpt-notation-input"
+                    maxlength="3"
+                    placeholder="755"
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-label="Notación octal de permisos"
+                  />
+                  <button type="button" class="lpt-copy-btn-sm" data-copy-target="lptOctalInput" aria-label="Copiar notación octal" title="Copiar octal">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="lpt-notation-group">
+                <label for="lptSymbolicInput" class="lpt-notation-label">Notación Simbólica</label>
+                <div class="lpt-notation-input-wrapper">
+                  <input
+                    type="text"
+                    id="lptSymbolicInput"
+                    class="lpt-notation-input lpt-notation-input--mono"
+                    maxlength="9"
+                    placeholder="rwxr-xr-x"
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-label="Notación simbólica de permisos"
+                  />
+                  <button type="button" class="lpt-copy-btn-sm" data-copy-target="lptSymbolicInput" aria-label="Copiar notación simbólica" title="Copiar simbólica">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- chmod command preview -->
+            <div class="lpt-chmod-section">
+              <span class="lpt-chmod-label">Comando chmod</span>
+              <div class="lpt-chmod-command">
+                <span class="lpt-chmod-code" id="lptChmodCommand">chmod 000</span>
+                <button type="button" class="lpt-copy-btn-sm" data-copy-target="lptChmodCommand" data-copy-type="text" aria-label="Copiar comando chmod" title="Copiar comando">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick presets -->
+        <section class="lpt-card">
+          <div class="lpt-card-header">
+            <span class="lpt-card-icon">⚡</span>
+            <h2 class="lpt-card-title">Permisos Comunes</h2>
+          </div>
+
+          <div class="lpt-card-body">
+            <div class="lpt-presets">
+              <button type="button" class="lpt-preset-btn" data-octal="755">
+                <span class="lpt-preset-octal">755</span>
+                <span class="lpt-preset-name">Directorio web</span>
+              </button>
+              <button type="button" class="lpt-preset-btn" data-octal="644">
+                <span class="lpt-preset-octal">644</span>
+                <span class="lpt-preset-name">Archivo regular</span>
+              </button>
+              <button type="button" class="lpt-preset-btn" data-octal="700">
+                <span class="lpt-preset-octal">700</span>
+                <span class="lpt-preset-name">Solo propietario</span>
+              </button>
+              <button type="button" class="lpt-preset-btn" data-octal="600">
+                <span class="lpt-preset-octal">600</span>
+                <span class="lpt-preset-name">Archivo privado</span>
+              </button>
+              <button type="button" class="lpt-preset-btn" data-octal="777">
+                <span class="lpt-preset-octal">777</span>
+                <span class="lpt-preset-name">Acceso total</span>
+              </button>
+              <button type="button" class="lpt-preset-btn" data-octal="400">
+                <span class="lpt-preset-octal">400</span>
+                <span class="lpt-preset-name">Solo lectura</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
 </html>
