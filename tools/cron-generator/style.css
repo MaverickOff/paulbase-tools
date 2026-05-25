@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LAYOUT BASE DE HERRAMIENTAS
+   LAYOUT BASE DE HERRAMIENTAS (patron del proyecto)
    ========================================================================== */
 
 .tool-layout {
@@ -9,10 +9,6 @@
   background-color: var(--bg-color);
   color: var(--text-main);
 }
-
-/* ==========================================================================
-   BARRA DE NAVEGACIÓN SUPERIOR
-   ========================================================================== */
 
 .tool-header-bar {
   display: flex;
@@ -55,53 +51,302 @@
   color: var(--text-main);
 }
 
-/* ==========================================================================
-   ÁREA DE CONTENIDO DE LA HERRAMIENTA
-   ========================================================================== */
-
 .tool-content-area {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: 2rem;
 }
 
-.tool-hero {
+/* ==========================================================================
+   CRON GENERATOR TOOL (.cgt-*)
+   ========================================================================== */
+
+.cgt-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem 0;
+}
+
+/* Header */
+.cgt-header {
   text-align: center;
-  max-width: 600px;
-  padding: 2rem;
-}
-
-.tool-hero-icon {
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
-  line-height: 1;
-}
-
-.tool-hero-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: var(--text-main);
-}
-
-.tool-hero-desc {
-  font-size: 1.1rem;
-  color: var(--text-muted);
-  line-height: 1.6;
   margin-bottom: 2rem;
 }
 
-.coming-soon-badge {
-  display: inline-block;
-  background: var(--primary-gradient);
-  color: #000;
-  font-weight: 600;
+.cgt-header-icon {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.cgt-header-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.cgt-header-desc {
+  font-size: 1rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Card */
+.cgt-card {
+  background: var(--card-bg, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Presets */
+.cgt-presets-title {
   font-size: 0.9rem;
-  padding: 0.5rem 1.25rem;
-  border-radius: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cgt-presets-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.cgt-preset-btn {
+  padding: 0.5rem 0.75rem;
+  background: var(--card-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease,
+    var(--primary-color) 0.2s ease;
+}
+
+.cgt-preset-btn:hover {
+  border-color: var(--primary-color);
+  background: var(--card-bg, rgba(255, 255, 255, 0.06));
+}
+
+.cgt-preset-btn.active {
+  background: var(--primary-color);
+  color: #000;
+  border-color: var(--primary-color);
+}
+
+/* Fields */
+.cgt-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cgt-field {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .cgt-field {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
+
+.cgt-field-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  padding-top: 0.5rem;
+}
+
+.cgt-field-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cgt-field-select {
+  width: 100%;
+  max-width: 240px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  background: var(--card-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.1));
+  border-radius: 10px;
+  color: var(--text-main);
+  cursor: pointer;
+  outline: none;
+}
+
+.cgt-field-select:focus {
+  border-color: var(--primary-color);
+}
+
+.cgt-field-select option {
+  background: var(--bg-color);
+  color: var(--text-main);
+}
+
+/* Chips */
+.cgt-chips {
+  display: none;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.4rem;
+}
+
+.cgt-chips.visible {
+  display: grid;
+}
+
+.cgt-chip {
+  padding: 0.35rem 0;
+  background: var(--card-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
+  border-radius: 6px;
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  text-align: center;
+  line-height: 1;
+}
+
+.cgt-chip.selected {
+  background: var(--primary-color);
+  color: #000;
+  border-color: var(--primary-color);
+}
+
+.cgt-chip:hover {
+  border-color: var(--primary-color);
+}
+
+/* Interval */
+.cgt-interval {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cgt-interval.visible {
+  display: flex;
+}
+
+.cgt-interval-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.cgt-interval-input {
+  width: 80px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  text-align: center;
+  background: var(--card-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  color: var(--text-main);
+  outline: none;
+}
+
+.cgt-interval-input:focus {
+  border-color: var(--primary-color);
+}
+
+/* Output */
+.cgt-output-section {
+  margin-top: 1.5rem;
+}
+
+.cgt-output-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cgt-expression {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+  margin-bottom: 1rem;
+}
+
+.cgt-expression-code {
+  flex: 1;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 1rem;
+  padding: 0.9rem 1.2rem;
+  background: var(--card-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.1));
+  border-radius: 10px;
+  color: var(--primary-color);
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cgt-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--primary-color);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.cgt-copy-btn:hover {
+  background: var(--primary-color-hover, #00cc6a);
+}
+
+.cgt-copy-btn:active {
+  transform: scale(0.97);
+}
+
+.cgt-copy-btn.copied {
+  background: var(--accent-color, #20c997);
+  color: #fff;
+}
+
+.cgt-description-box {
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
+  border-radius: 10px;
+  border-left: 3px solid var(--primary-color);
+}
+
+.cgt-description-text {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
 }
 
 /* ==========================================================================
@@ -109,19 +354,36 @@
    ========================================================================== */
 
 @media (max-width: 768px) {
-  .tool-header-bar {
-    padding: 0.75rem 1rem;
-  }
-
-  .tool-hero {
+  .tool-content-area {
     padding: 1rem;
   }
 
-  .tool-hero-title {
-    font-size: 1.5rem;
+  .cgt-wrapper {
+    padding: 0.5rem 0;
   }
 
-  .tool-hero-desc {
-    font-size: 1rem;
+  .cgt-header-title {
+    font-size: 1.4rem;
+  }
+
+  .cgt-card {
+    padding: 1rem;
+  }
+
+  .cgt-chips {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .cgt-expression {
+    flex-direction: column;
+  }
+
+  .cgt-expression-code {
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .cgt-copy-btn {
+    padding: 0.65rem 1rem;
   }
 }

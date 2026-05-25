@@ -8,10 +8,12 @@
     />
     <meta
       name="description"
-      content="Generador de Cronjobs. Construye expresiones cron de forma visual."
+      content="Generador de Cronjobs. Construye expresiones cron de forma visual con selección interactiva y descripción en español."
     />
-    <meta http-equiv="Content-Security-Policy"
-      content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE='; connect-src 'self' https://cdn.jsdelivr.net; base-uri 'self'; form-action 'self';" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self';"
+    />
     <title>Generador de Cronjobs | Paulbase Tools</title>
     <link
       rel="stylesheet"
@@ -26,8 +28,19 @@
     <div class="tool-layout">
       <header class="tool-header-bar">
         <a href="../../" class="back-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M15 18l-6-6 6-6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
           Volver
         </a>
@@ -35,16 +48,10 @@
       </header>
 
       <main class="tool-content-area">
-        <div class="tool-hero">
-          <div class="tool-hero-icon">⏰</div>
-          <h1 class="tool-hero-title">Generador de Cronjobs</h1>
-          <p class="tool-hero-desc">
-            Construye expresiones cron de forma visual. Selecciona minutos, horas,
-            días y obtén la sintaxis correcta + descripción en español.
-          </p>
-          <span class="coming-soon-badge">En desarrollo</span>
-        </div>
+        <div id="cron-app"></div>
       </main>
     </div>
+
+    <script type="module" src="script.js"></script>
   </body>
 </html>
