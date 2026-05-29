@@ -1,461 +1,435 @@
 /**
- * @fileoverview Generador de Cronjobs - Vanilla JS (ES Modules)
+ * @fileoverview Generador de Cronjobs - Lógica con Vanilla JS
  *
- * Construccion visual de expresiones cron estandar (5 campos).
- * Sin frameworks, sin innerHTML, sin eval, sin setTimeout con strings.
+ * Construcción visual de expresiones cron. Sin frameworks, sin innerHTML.
+ * Usa exclusivamente document.createElement(), textContent y eventListeners.
  */
 
 // ==========================================
-// CONSTANTES
+// CONSTANTES DE CONFIGURACIÓN
 // ==========================================
 
+const MONTH_NAMES = [
+  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+];
+
 const DOW_NAMES = [
-  'domingo',
-  'lunes',
-  'martes',
-  'miércoles',
-  'jueves',
-  'viernes',
-  'sábado',
+  'domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'
 ];
 
-const MONTH_NAMES_ES = [
-  'enero',
-  'febrero',
-  'marzo',
-  'abril',
-  'mayo',
-  'junio',
-  'julio',
-  'agosto',
-  'septiembre',
-  'octubre',
-  'noviembre',
-  'diciembre',
-];
-
-const FIELD_META = [
-  { id: 'minute', label: 'Minuto', min: 0, max: 59, stepMax: 30 },
-  { id: 'hour', label: 'Hora', min: 0, max: 23, stepMax: 12 },
-  { id: 'dayOfMonth', label: 'Día del mes', min: 1, max: 31, stepMax: 15 },
+/** @type {Array<{ id: string; label: string; min: number; max: number; names?: string[]; stepMax: number; gridCols?: number }>} */
+const FIELD_CONFIG = [
+  {
+    id: 'minute',
+    label: 'Minuto',
+    min: 0,
+    max: 59,
+    stepMax: 30,
+    gridCols: 10
+  },
+  {
+    id: 'hour',
+    label: 'Hora',
+    min: 0,
+    max: 23,
+    stepMax: 12,
+    gridCols: 8
+  },
+  {
+    id: 'dayOfMonth',
+    label: 'Día del mes',
+    min: 1,
+    max: 31,
+    stepMax: 15,
+    gridCols: 7
+  },
   {
     id: 'month',
     label: 'Mes',
     min: 1,
     max: 12,
+    names: MONTH_NAMES.map(m => m.charAt(0).toUpperCase() + m.slice(1, 3)),
     stepMax: 6,
-    names: [
-      'Ene',
-      'Feb',
-      'Mar',
-      'Abr',
-      'May',
-      'Jun',
-      'Jul',
-      'Ago',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dic',
-    ],
+    gridCols: 6
   },
   {
     id: 'dayOfWeek',
     label: 'Día de la semana',
     min: 0,
     max: 6,
-    stepMax: 3,
     names: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
-  },
+    stepMax: 3,
+    gridCols: 7
+  }
 ];
 
+/** @type {Array<{ label: string; state: Record<string, { mode: string; specific: number[]; step: number }> }>} */
 const PRESETS = [
   {
     label: 'Cada minuto',
     state: {
-      minute: { mode: 'all', values: [], step: 1 },
-      hour: { mode: 'all', values: [], step: 1 },
-      dayOfMonth: { mode: 'all', values: [], step: 1 },
-      month: { mode: 'all', values: [], step: 1 },
-      dayOfWeek: { mode: 'all', values: [], step: 1 },
-    },
+      minute: { mode: '*', specific: [], step: 1 },
+      hour: { mode: '*', specific: [], step: 1 },
+      dayOfMonth: { mode: '*', specific: [], step: 1 },
+      month: { mode: '*', specific: [], step: 1 },
+      dayOfWeek: { mode: '*', specific: [], step: 1 }
+    }
   },
   {
     label: 'Cada 5 minutos',
     state: {
-      minute: { mode: 'step', values: [], step: 5 },
-      hour: { mode: 'all', values: [], step: 1 },
-      dayOfMonth: { mode: 'all', values: [], step: 1 },
-      month: { mode: 'all', values: [], step: 1 },
-      dayOfWeek: { mode: 'all', values: [], step: 1 },
-    },
+      minute: { mode: 'step', specific: [], step: 5 },
+      hour: { mode: '*', specific: [], step: 1 },
+      dayOfMonth: { mode: '*', specific: [], step: 1 },
+      month: { mode: '*', specific: [], step: 1 },
+      dayOfWeek: { mode: '*', specific: [], step: 1 }
+    }
   },
   {
     label: 'Cada 30 minutos',
     state: {
-      minute: { mode: 'step', values: [], step: 30 },
-      hour: { mode: 'all', values: [], step: 1 },
-      dayOfMonth: { mode: 'all', values: [], step: 1 },
-      month: { mode: 'all', values: [], step: 1 },
-      dayOfWeek: { mode: 'all', values: [], step: 1 },
-    },
+      minute: { mode: 'step', specific: [], step: 30 },
+      hour: { mode: '*', specific: [], step: 1 },
+      dayOfMonth: { mode: '*', specific: [], step: 1 },
+      month: { mode: '*', specific: [], step: 1 },
+      dayOfWeek: { mode: '*', specific: [], step: 1 }
+    }
   },
   {
     label: 'Cada hora',
     state: {
-      minute: { mode: 'specific', values: [0], step: 1 },
-      hour: { mode: 'all', values: [], step: 1 },
-      dayOfMonth: { mode: 'all', values: [], step: 1 },
-      month: { mode: 'all', values: [], step: 1 },
-      dayOfWeek: { mode: 'all', values: [], step: 1 },
-    },
+      minute: { mode: 'specific', specific: [0], step: 1 },
+      hour: { mode: '*', specific: [], step: 1 },
+      dayOfMonth: { mode: '*', specific: [], step: 1 },
+      month: { mode: '*', specific: [], step: 1 },
+      dayOfWeek: { mode: '*', specific: [], step: 1 }
+    }
   },
   {
     label: 'Diario (00:00)',
     state: {
-      minute: { mode: 'specific', values: [0], step: 1 },
-      hour: { mode: 'specific', values: [0], step: 1 },
-      dayOfMonth: { mode: 'all', values: [], step: 1 },
-      month: { mode: 'all', values: [], step: 1 },
-      dayOfWeek: { mode: 'all', values: [], step: 1 },
-    },
+      minute: { mode: 'specific', specific: [0], step: 1 },
+      hour: { mode: 'specific', specific: [0], step: 1 },
+      dayOfMonth: { mode: '*', specific: [], step: 1 },
+      month: { mode: '*', specific: [], step: 1 },
+      dayOfWeek: { mode: '*', specific: [], step: 1 }
+    }
   },
   {
     label: 'Lun - Vie (09:00)',
     state: {
-      minute: { mode: 'specific', values: [0], step: 1 },
-      hour: { mode: 'specific', values: [9], step: 1 },
-      dayOfMonth: { mode: 'all', values: [], step: 1 },
-      month: { mode: 'all', values: [], step: 1 },
-      dayOfWeek: { mode: 'specific', values: [1, 2, 3, 4, 5], step: 1 },
-    },
+      minute: { mode: 'specific', specific: [0], step: 1 },
+      hour: { mode: 'specific', specific: [9], step: 1 },
+      dayOfMonth: { mode: '*', specific: [], step: 1 },
+      month: { mode: '*', specific: [], step: 1 },
+      dayOfWeek: { mode: 'specific', specific: [1, 2, 3, 4, 5], step: 1 }
+    }
   },
   {
-    label: 'Semanal (Dom)',
+    label: 'Semanal (Dom 00:00)',
     state: {
-      minute: { mode: 'specific', values: [0], step: 1 },
-      hour: { mode: 'specific', values: [0], step: 1 },
-      dayOfMonth: { mode: 'all', values: [], step: 1 },
-      month: { mode: 'all', values: [], step: 1 },
-      dayOfWeek: { mode: 'specific', values: [0], step: 1 },
-    },
+      minute: { mode: 'specific', specific: [0], step: 1 },
+      hour: { mode: 'specific', specific: [0], step: 1 },
+      dayOfMonth: { mode: '*', specific: [], step: 1 },
+      month: { mode: '*', specific: [], step: 1 },
+      dayOfWeek: { mode: 'specific', specific: [0], step: 1 }
+    }
   },
   {
-    label: 'Mensual (1 00:00)',
+    label: 'Mensual (1º 00:00)',
     state: {
-      minute: { mode: 'specific', values: [0], step: 1 },
-      hour: { mode: 'specific', values: [0], step: 1 },
-      dayOfMonth: { mode: 'specific', values: [1], step: 1 },
-      month: { mode: 'all', values: [], step: 1 },
-      dayOfWeek: { mode: 'all', values: [], step: 1 },
-    },
+      minute: { mode: 'specific', specific: [0], step: 1 },
+      hour: { mode: 'specific', specific: [0], step: 1 },
+      dayOfMonth: { mode: 'specific', specific: [1], step: 1 },
+      month: { mode: '*', specific: [], step: 1 },
+      dayOfWeek: { mode: '*', specific: [], step: 1 }
+    }
   },
   {
-    label: 'Anual (1 Ene 00:00)',
+    label: 'Anual (1° Ene 00:00)',
     state: {
-      minute: { mode: 'specific', values: [0], step: 1 },
-      hour: { mode: 'specific', values: [0], step: 1 },
-      dayOfMonth: { mode: 'specific', values: [1], step: 1 },
-      month: { mode: 'specific', values: [1], step: 1 },
-      dayOfWeek: { mode: 'all', values: [], step: 1 },
-    },
+      minute: { mode: 'specific', specific: [0], step: 1 },
+      hour: { mode: 'specific', specific: [0], step: 1 },
+      dayOfMonth: { mode: 'specific', specific: [1], step: 1 },
+      month: { mode: 'specific', specific: [1], step: 1 },
+      dayOfWeek: { mode: '*', specific: [], step: 1 }
+    }
   },
   {
-    label: 'Sabado (10:00)',
+    label: 'Cada sábado (10:00)',
     state: {
-      minute: { mode: 'specific', values: [0], step: 1 },
-      hour: { mode: 'specific', values: [10], step: 1 },
-      dayOfMonth: { mode: 'all', values: [], step: 1 },
-      month: { mode: 'all', values: [], step: 1 },
-      dayOfWeek: { mode: 'specific', values: [6], step: 1 },
-    },
-  },
+      minute: { mode: 'specific', specific: [0], step: 1 },
+      hour: { mode: 'specific', specific: [10], step: 1 },
+      dayOfMonth: { mode: '*', specific: [], step: 1 },
+      month: { mode: '*', specific: [], step: 1 },
+      dayOfWeek: { mode: 'specific', specific: [6], step: 1 }
+    }
+  }
 ];
 
 // ==========================================
-// UTILIDADES
+// ESTADO GLOBAL
 // ==========================================
 
-/** Crea elementos DOM de manera segura. */
-function createEl(tag, opts) {
-  opts = opts || {};
+/** @type {Record<string, { mode: string; specific: number[]; step: number }>} */
+let state = {};
+
+// Referencias a elementos DOM del output
+/** @type {{ expression?: HTMLElement; description?: HTMLElement; copyBtn?: HTMLButtonElement }} */
+let outputRefs = {};
+
+// Referencias a chips (para sincronizar UI sin regenerar)
+/** @type {Record<string, HTMLElement[]>} */
+let chipRefs = {};
+
+// ==========================================
+// HELPERS DE DOM
+// ==========================================
+
+/**
+ * Crea un elemento DOM con opciones. Nunca usa innerHTML.
+ * @param {string} tag
+ * @param {Object} options
+ * @returns {HTMLElement}
+ */
+function createEl(tag, options = {}) {
   const el = document.createElement(tag);
-  if (opts.id) el.id = opts.id;
-  if (opts.className) el.className = opts.className;
-  if (opts.textContent !== undefined) el.textContent = opts.textContent;
-  if (opts.type) el.type = opts.type;
-  if (opts.value !== undefined) el.value = opts.value;
-  if (opts.attrs)
-    Object.entries(opts.attrs).forEach(function (entry) {
-      el.setAttribute(entry[0], entry[1]);
+  if (options.className) el.className = options.className;
+  if (options.id) el.id = options.id;
+  if (options.textContent) el.textContent = options.textContent;
+  if (options.type) el.type = options.type;
+
+  if (options.attrs) {
+    Object.entries(options.attrs).forEach(([key, val]) => {
+      el.setAttribute(key, String(val));
     });
-  if (opts.listeners)
-    Object.entries(opts.listeners).forEach(function (entry) {
-      el.addEventListener(entry[0], entry[1]);
+  }
+
+  if (options.listeners) {
+    Object.entries(options.listeners).forEach(([event, handler]) => {
+      el.addEventListener(event, handler);
     });
+  }
+
   return el;
 }
 
-function fmt(n) {
-  return String(n).padStart(2, '0');
-}
-
-function isContiguous(arr) {
-  if (arr.length < 2) return false;
-  for (let i = 1; i < arr.length; i++) {
-    if (arr[i] !== arr[i - 1] + 1) return false;
+/**
+ * Vacía un elemento padre de todos sus hijos.
+ * @param {HTMLElement} parent
+ */
+function clearChildren(parent) {
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
   }
-  return true;
 }
 
-function humanize(indices, names) {
-  if (indices.length === 0) return '';
-  if (indices.length === 1)
-    return names ? names[indices[0]] : String(indices[0]);
-  if (isContiguous(indices)) {
-    const first = names ? names[indices[0]] : String(indices[0]);
-    const last = names
-      ? names[indices[indices.length - 1]]
-      : String(indices[indices.length - 1]);
-    return 'de ' + first + ' a ' + last;
+// ==========================================
+// LÓGICA DE EXPRESIÓN Y TRADUCCIÓN
+// ==========================================
+
+/**
+ * Obtiene la expresión cron para un campo y su estado.
+ */
+function getFieldExpression(fieldConfig, fieldState) {
+  if (fieldState.mode === '*') {
+    return '*';
   }
-  return indices
-    .map(function (i) {
-      return names ? names[i] : String(i);
-    })
-    .join(', ');
-}
-
-// ==========================================
-// ESTADO
-// ==========================================
-
-let state = {};
-const chipRefs = {};
-let uiRefs = {};
-
-// ==========================================
-// LOGICA CRON
-// ==========================================
-
-function getFieldCron(id) {
-  const s = state[id];
-  if (s.mode === 'all') return '*';
-  if (s.mode === 'step') return '*/' + s.step;
-  if (s.mode === 'specific')
-    return s.values.length ? s.values.join(',') : '*';
+  if (fieldState.mode === 'step') {
+    return `*/${fieldState.step}`;
+  }
+  if (fieldState.mode === 'specific') {
+    if (fieldState.specific.length === 0) return '*';
+    return fieldState.specific.join(',');
+  }
   return '*';
 }
 
-function getCronExpression() {
-  return FIELD_META.map(function (f) {
-    return getFieldCron(f.id);
-  }).join(' ');
-}
-
-function getDescription() {
-  const m = state.minute;
-  const h = state.hour;
-  const dm = state.dayOfMonth;
-  const mo = state.month;
-  const dw = state.dayOfWeek;
-
-  if (
-    m.mode === 'all' &&
-    h.mode === 'all' &&
-    dm.mode === 'all' &&
-    mo.mode === 'all' &&
-    dw.mode === 'all'
-  )
-    return 'Cada minuto';
-
-  if (m.mode === 'step' && h.mode === 'all' && dm.mode === 'all' && mo.mode === 'all' && dw.mode === 'all')
-    return m.step === 1 ? 'Cada minuto' : 'Cada ' + m.step + ' minutos';
-
-  if (m.mode === 'specific' && m.values.length === 1 && m.values[0] === 0 && h.mode === 'all')
-    return 'Cada hora en punto';
-
-  if (m.mode === 'specific' && m.values.length === 1 && m.values[0] === 0 && h.mode === 'step')
-    return h.step === 1 ? 'Cada hora en punto' : 'Cada ' + h.step + ' horas en punto';
-
-  if (
-    m.mode === 'specific' &&
-    m.values.length === 1 &&
-    h.mode === 'specific' &&
-    h.values.length === 1 &&
-    dm.mode === 'all' &&
-    mo.mode === 'all' &&
-    dw.mode === 'all'
-  )
-    return 'Todos los días a las ' + fmt(h.values[0]) + ':' + fmt(m.values[0]);
-
-  if (
-    m.mode === 'specific' &&
-    m.values.length === 1 &&
-    h.mode === 'specific' &&
-    h.values.length === 1 &&
-    dw.mode === 'specific' &&
-    dm.mode === 'all' &&
-    mo.mode === 'all'
-  ) {
-    const days = humanize(dw.values, DOW_NAMES);
-    return (
-      'Los ' + days + ' a las ' + fmt(h.values[0]) + ':' + fmt(m.values[0])
-    );
-  }
-
-  if (
-    m.mode === 'specific' &&
-    m.values.length === 1 &&
-    h.mode === 'specific' &&
-    h.values.length === 1 &&
-    dm.mode === 'specific' &&
-    dm.values.length === 1 &&
-    mo.mode === 'all' &&
-    dw.mode === 'all'
-  )
-    return (
-      'El dia ' +
-      dm.values[0] +
-      ' de cada mes a las ' +
-      fmt(h.values[0]) +
-      ':' +
-      fmt(m.values[0])
-    );
-
-  if (
-    m.mode === 'specific' &&
-    m.values.length === 1 &&
-    h.mode === 'specific' &&
-    h.values.length === 1 &&
-    dm.mode === 'specific' &&
-    dm.values.length === 1 &&
-    mo.mode === 'specific' &&
-    mo.values.length === 1 &&
-    dw.mode === 'all'
-  )
-    return (
-      'El ' +
-      dm.values[0] +
-      ' de ' +
-      MONTH_NAMES_ES[mo.values[0] - 1] +
-      ' a las ' +
-      fmt(h.values[0]) +
-      ':' +
-      fmt(m.values[0])
-    );
-
-  const parts = [];
-
-  if (dw.mode === 'specific')
-    parts.push('los ' + humanize(dw.values, DOW_NAMES));
-
-  if (dm.mode === 'specific') {
-    if (dm.values.length === 1) parts.push('el día ' + dm.values[0]);
-    else parts.push('los días ' + dm.values.join(', '));
-  }
-
-  if (mo.mode === 'specific')
-    parts.push('en ' + humanize(mo.values, MONTH_NAMES_ES));
-
-  if (h.mode === 'specific') {
-    if (m.mode === 'specific' && m.values.length === 1) {
-      parts.push('a las ' + fmt(h.values[0]) + ':' + fmt(m.values[0]));
-    } else {
-      const hrList = h.values
-        .map(function (v) {
-          return fmt(v);
-        })
-        .join(', ');
-      parts.push('a las ' + hrList + 'h');
-    }
-  } else if (h.mode === 'step') {
-    parts.push('cada ' + h.step + ' horas');
-  }
-
-  if (m.mode === 'specific' && h.mode !== 'specific') {
-    const minList = m.values
-      .map(function (v) {
-        return fmt(v);
-      })
-      .join(', ');
-    parts.push('minuto ' + minList);
-  } else if (m.mode === 'step') {
-    parts.push('cada ' + m.step + ' minutos');
-  }
-
-  if (parts.length === 0) return 'Cada minuto';
+/**
+ * Genera la expresión cron completa a partir del estado actual.
+ */
+function buildCronExpression() {
+  const parts = FIELD_CONFIG.map(fc => getFieldExpression(fc, state[fc.id]));
   return parts.join(' ');
 }
 
+/**
+ * Traduce el estado actual a una descripción legible en español.
+ */
+function buildDescription() {
+  const m = state.minute;
+  const h = state.hour;
+  const d = state.dayOfMonth;
+  const mo = state.month;
+  const w = state.dayOfWeek;
+
+  // Comprobación: todo es *
+  const allStar = m.mode === '*' && h.mode === '*' && d.mode === '*' && mo.mode === '*' && w.mode === '*';
+  if (allStar) return 'Cada minuto';
+
+  // Helper para formatear hora
+  const fmtH = (v) => String(v).padStart(2, '0');
+
+  // Parte temporal
+  let timePart = '';
+  let timeOnly = false;
+
+  if (m.mode === 'step' && h.mode === '*') {
+    if (m.step === 1) timePart = 'Cada minuto';
+    else timePart = `Cada ${m.step} minutos`;
+    if (d.mode !== '*' || mo.mode !== '*' || w.mode !== '*') {
+      // Tiene componentes de fecha, sólo timePart base
+    } else {
+      timeOnly = true;
+    }
+  } else if (m.mode === 'specific' && m.specific.length === 1) {
+    const mm = fmtH(m.specific[0]);
+    if (h.mode === '*') {
+      timePart = `Cada hora a los ${mm} minutos`;
+      if (mm === '00') timePart = 'Cada hora en punto';
+    } else if (h.mode === 'specific' && h.specific.length === 1) {
+      const hh = fmtH(h.specific[0]);
+      timePart = `a las ${hh}:${mm}`;
+    } else if (h.mode === 'step') {
+      const hh = fmtH(h.specific[0]);
+      timePart = `a las ${hh}:${mm} cada ${h.step} horas`;
+    }
+  } else if (m.mode === 'specific' && m.specific.length > 1) {
+    if (h.mode === 'specific' && h.specific.length === 1) {
+      const mm = m.specific.map(fmtH).join(', ');
+      const hh = fmtH(h.specific[0]);
+      timePart = `a las ${hh}:${mm}`;
+    } else {
+      timePart = 'Programación personalizada';
+    }
+  } else if (h.mode === 'step') {
+    const mm = m.mode === 'specific' && m.specific.length === 1 ? fmtH(m.specific[0]) : '00';
+    timePart = `Cada ${h.step} horas a los ${mm} minutos`;
+    if (mm === '00') {
+      timePart = `Cada ${h.step} horas en punto`;
+    }
+  }
+
+  // Parte de fecha
+  let datePart = '';
+
+  if (w.mode === 'specific' && w.specific.length > 0) {
+    const names = w.specific.map(v => DOW_NAMES[v]);
+    if (names.length === 1) {
+      datePart = `Los ${names[0]}`;
+    } else if (names.length === 7) {
+      datePart = 'Todos los días';
+    } else {
+      datePart = `Los ${names.join(', ')}`;
+    }
+  } else if (d.mode === 'specific' && d.specific.length > 0) {
+    if (mo.mode === 'specific' && mo.specific.length > 0) {
+      // DOM + mes
+      if (d.specific.length === 1 && mo.specific.length === 1) {
+        const mName = MONTH_NAMES[mo.specific[0] - 1];
+        datePart = `El ${d.specific[0]} de ${mName}`;
+      } else if (d.specific.length === 1) {
+        const mNames = mo.specific.map(v => MONTH_NAMES[v - 1]).join(', ');
+        datePart = `El ${d.specific[0]} de ${mNames}`;
+      } else {
+        datePart = `Los días ${d.specific.join(', ')}`;
+      }
+    } else {
+      if (d.specific.length === 1) {
+        datePart = `El día ${d.specific[0]} de cada mes`;
+      } else {
+        datePart = `Los días ${d.specific.join(', ')} de cada mes`;
+      }
+    }
+  } else if (mo.mode === 'specific' && mo.specific.length > 0) {
+    if (mo.specific.length === 1) {
+      datePart = `En ${MONTH_NAMES[mo.specific[0] - 1]}`;
+    } else {
+      const names = mo.specific.map(v => MONTH_NAMES[v - 1]);
+      datePart = `En ${names.join(', ')}`;
+    }
+  } else if (d.mode === '*' && mo.mode === '*' && w.mode === '*') {
+    datePart = 'Todos los días';
+  }
+
+  // Combinar
+  if (timeOnly) return timePart;
+  if (datePart && timePart) {
+    if (timePart.startsWith('a las')) {
+      return `${datePart} ${timePart}`;
+    }
+    if (timePart.startsWith('Cada')) {
+      return `${datePart}, ${timePart}`;
+    }
+    return `${datePart}, ${timePart}`;
+  }
+  if (datePart) return datePart;
+  if (timePart) return timePart;
+  return 'Programación cron personalizada';
+}
+
 // ==========================================
-// CONSTRUCCION DE LA UI
+// CONSTRUCCIÓN DE LA UI
 // ==========================================
 
 function initApp() {
   const container = document.getElementById('cron-app');
   if (!container) return;
-  while (container.firstChild) container.removeChild(container.firstChild);
-
-  FIELD_META.forEach(function (f) {
-    state[f.id] = { mode: 'all', values: [], step: 1 };
-  });
+  clearChildren(container);
 
   const wrapper = createEl('div', { className: 'cgt-wrapper' });
   container.appendChild(wrapper);
 
-  wrapper.appendChild(buildHeader());
+  initState();
+
+  // Header
+  const header = createEl('div', { className: 'cgt-header' });
+  const title = createEl('h1', { className: 'cgt-header-title', textContent: 'Generador de Cronjobs' });
+  const desc = createEl('p', { className: 'cgt-header-desc', textContent: 'Construye expresiones cron de forma visual. Selecciona cada componente para generar la sintaxis correcta y obtener una descripción legible en español.' });
+  header.appendChild(createEl('div', { className: 'cgt-header-icon', textContent: '⏰' }));
+  header.appendChild(title);
+  header.appendChild(desc);
+  wrapper.appendChild(header);
+
+  // Presets
   wrapper.appendChild(buildPresetsCard());
+
+  // Fields
   wrapper.appendChild(buildFieldsCard());
+
+  // Output
   wrapper.appendChild(buildOutputCard());
 
-  updateAllControls();
-  updateDisplay();
+  updateUI();
 }
 
-function buildHeader() {
-  const header = createEl('div', { className: 'cgt-header' });
-  header.appendChild(
-    createEl('div', { className: 'cgt-header-icon', textContent: '⏰' })
-  );
-  header.appendChild(
-    createEl('h1', {
-      className: 'cgt-header-title',
-      textContent: 'Generador de Cronjobs',
-    })
-  );
-  header.appendChild(
-    createEl('p', {
-      className: 'cgt-header-desc',
-      textContent:
-        'Construye expresiones cron de forma visual. Selecciona cada componente para generar la sintaxis correcta y la descripción en español.',
-    })
-  );
-  return header;
+function initState() {
+  state = {};
+  FIELD_CONFIG.forEach(fc => {
+    state[fc.id] = { mode: '*', specific: [], step: 1 };
+  });
 }
 
 function buildPresetsCard() {
   const card = createEl('div', { className: 'cgt-card' });
-  card.appendChild(
-    createEl('div', {
-      className: 'cgt-presets-title',
-      textContent: 'Presets rápidos',
-    })
-  );
+  const label = createEl('div', { className: 'cgt-presets-title', textContent: 'Presets rápidos' });
+  card.appendChild(label);
+
   const grid = createEl('div', { className: 'cgt-presets-grid' });
 
-  PRESETS.forEach(function (preset, idx) {
+  PRESETS.forEach((preset, index) => {
     const btn = createEl('button', {
       type: 'button',
       className: 'cgt-preset-btn',
       textContent: preset.label,
       listeners: {
-        click: function () {
-          state = JSON.parse(JSON.stringify(preset.state));
-          updateAllControls();
-          updateDisplay();
-        },
-      },
+        click: () => {
+          applyPreset(index);
+          updateAllFieldUIs();
+          updateUI();
+        }
+      }
     });
     grid.appendChild(btn);
   });
@@ -464,218 +438,238 @@ function buildPresetsCard() {
   return card;
 }
 
+function applyPreset(index) {
+  const preset = PRESETS[index];
+  if (!preset) return;
+  state = JSON.parse(JSON.stringify(preset.state));
+}
+
 function buildFieldsCard() {
   const card = createEl('div', { className: 'cgt-card' });
-  const fieldsContainer = createEl('div', { className: 'cgt-fields' });
-  card.appendChild(fieldsContainer);
+  const container = createEl('div', { className: 'cgt-fields' });
 
-  FIELD_META.forEach(function (fc) {
+  FIELD_CONFIG.forEach(fc => {
     const row = createEl('div', { className: 'cgt-field' });
-    const label = createEl('div', {
-      className: 'cgt-field-label',
-      textContent: fc.label,
-    });
+    const label = createEl('div', { className: 'cgt-field-label', textContent: fc.label });
+
     const controls = createEl('div', { className: 'cgt-field-controls' });
 
+    // Select de modo
     const select = createEl('select', {
       className: 'cgt-field-select',
       attrs: { 'data-field': fc.id },
       listeners: {
-        change: function (e) {
-          state[fc.id].mode = e.target.value;
-          if (state[fc.id].mode !== 'specific') state[fc.id].values = [];
-          updateFieldVisibility(fc.id);
-          updateDisplay();
-        },
-      },
+        change: (e) => {
+          const newMode = e.target.value;
+          state[fc.id].mode = newMode;
+          // Al cambiar de modo, si no es 'specific', limpiar selección
+          if (newMode !== 'specific') {
+            state[fc.id].specific = [];
+          }
+          // Mostrar/ocultar subcontroles
+          updateFieldControlVisibility(fc.id);
+          updateUI();
+        }
+      }
     });
 
-    const opts = [
-      { v: 'all', t: 'Todos los valores (*)' },
-      { v: 'specific', t: 'Especificar valores' },
-      { v: 'step', t: 'Cada N (intervalo)' },
+    const modes = [
+      { value: '*', text: 'Todos los valores (*)' },
+      { value: 'step', text: 'Cada N (intervalo)' },
+      { value: 'specific', text: 'Especificar valores' }
     ];
-    opts.forEach(function (opt) {
-      select.appendChild(
-        createEl('option', { attrs: { value: opt.v }, textContent: opt.t })
-      );
+
+    modes.forEach(m => {
+      const opt = createEl('option', { attrs: { value: m.value }, textContent: m.text });
+      select.appendChild(opt);
     });
+
     select.value = state[fc.id].mode;
     controls.appendChild(select);
 
-    const chips = createEl('div', { className: 'cgt-chips' });
-    chips.id = 'chips-' + fc.id;
-    chipRefs[fc.id] = [];
-    for (let i = fc.min; i <= fc.max; i++) {
-      const btn = createEl('button', {
-        type: 'button',
-        className: 'cgt-chip',
-        textContent: fc.names
-          ? fc.names[i - fc.min]
-          : String(i).padStart(2, '0'),
-        listeners: {
-          click: function () {
-            const st = state[fc.id];
-            const idx = st.values.indexOf(i);
-            if (idx >= 0) {
-              st.values.splice(idx, 1);
-              btn.classList.remove('selected');
-            } else {
-              st.values.push(i);
-              st.values.sort(function (a, b) {
-                return a - b;
-              });
-              btn.classList.add('selected');
-            }
-            updateDisplay();
-          },
-        },
-      });
-      chips.appendChild(btn);
-      chipRefs[fc.id].push(btn);
-    }
-    controls.appendChild(chips);
+    // Contenedor de chips (visible solo en modo 'specific')
+    const chipsContainer = createEl('div', { className: 'cgt-chips' });
+    chipsContainer.id = `chips-${fc.id}`;
+    buildChips(fc, chipsContainer);
+    controls.appendChild(chipsContainer);
 
-    const interval = createEl('div', { className: 'cgt-interval' });
-    interval.id = 'interval-' + fc.id;
-    interval.appendChild(
-      createEl('span', {
-        className: 'cgt-interval-label',
-        textContent: 'Cada:',
-      })
-    );
-    interval.appendChild(
-      createEl('input', {
-        type: 'number',
-        className: 'cgt-interval-input',
-        attrs: { min: 1, max: fc.stepMax, value: state[fc.id].step },
-        listeners: {
-          input: function (e) {
-            let v = parseInt(e.target.value, 10);
-            if (isNaN(v) || v < 1) v = 1;
-            if (v > fc.stepMax) v = fc.stepMax;
-            state[fc.id].step = v;
-            updateDisplay();
-          },
-        },
-      })
-    );
-    controls.appendChild(interval);
+    // Contenedor de intervalo (visible solo en modo 'step')
+    const intervalContainer = createEl('div', { className: 'cgt-interval' });
+    intervalContainer.id = `interval-${fc.id}`;
+    buildInterval(fc, intervalContainer);
+    controls.appendChild(intervalContainer);
 
     row.appendChild(label);
     row.appendChild(controls);
-    fieldsContainer.appendChild(row);
+    container.appendChild(row);
   });
 
+  card.appendChild(container);
   return card;
+}
+
+function buildChips(fieldConfig, container) {
+  chipRefs[fieldConfig.id] = [];
+  const { min, max, names } = fieldConfig;
+
+  for (let i = min; i <= max; i++) {
+    const btn = createEl('button', {
+      type: 'button',
+      className: 'cgt-chip',
+      textContent: names ? names[i - min] : String(i).padStart(2, '0'),
+      listeners: {
+        click: () => {
+          const st = state[fieldConfig.id];
+          const val = i;
+          const idx = st.specific.indexOf(val);
+          if (idx >= 0) {
+            st.specific.splice(idx, 1);
+            btn.classList.remove('selected');
+          } else {
+            st.specific.push(val);
+            st.specific.sort((a, b) => a - b);
+            btn.classList.add('selected');
+          }
+          updateUI();
+        }
+      }
+    });
+    container.appendChild(btn);
+    chipRefs[fieldConfig.id]?.push(btn);
+  }
+}
+
+function buildInterval(fieldConfig, container) {
+  const label = createEl('span', { className: 'cgt-interval-label', textContent: 'Cada:' });
+  const input = createEl('input', {
+    type: 'number',
+    className: 'cgt-interval-input',
+    attrs: {
+      min: 1,
+      max: fieldConfig.stepMax,
+      value: state[fieldConfig.id].step || 1
+    },
+    listeners: {
+      input: (e) => {
+        let val = parseInt(e.target.value, 10);
+        if (isNaN(val) || val < 1) val = 1;
+        if (val > fieldConfig.stepMax) val = fieldConfig.stepMax;
+        state[fieldConfig.id].step = val;
+        updateUI();
+      }
+    }
+  });
+
+  container.appendChild(label);
+  container.appendChild(input);
+}
+
+function updateFieldControlVisibility(fieldId) {
+  const chips = document.getElementById(`chips-${fieldId}`);
+  const interval = document.getElementById(`interval-${fieldId}`);
+  if (chips) chips.classList.toggle('visible', state[fieldId].mode === 'specific');
+  if (interval) interval.classList.toggle('visible', state[fieldId].mode === 'step');
+}
+
+function updateAllFieldUIs() {
+  FIELD_CONFIG.forEach(fc => {
+    const select = document.querySelector(`.cgt-field-select[data-field="${fc.id}"]`);
+    if (select) select.value = state[fc.id].mode;
+    updateFieldControlVisibility(fc.id);
+    updateChipsSelection(fc.id);
+    updateIntervalValue(fc.id);
+  });
+}
+
+function updateChipsSelection(fieldId) {
+  const chips = chipRefs[fieldId];
+  if (!chips) return;
+  const selected = state[fieldId].specific;
+  chips.forEach((chip, idx) => {
+    const cfg = FIELD_CONFIG.find(f => f.id === fieldId);
+    const val = cfg.min + idx;
+    chip.classList.toggle('selected', selected.includes(val));
+  });
+}
+
+function updateIntervalValue(fieldId) {
+  const container = document.getElementById(`interval-${fieldId}`);
+  if (!container) return;
+  const input = container.querySelector('input');
+  if (input) input.value = state[fieldId].step;
 }
 
 function buildOutputCard() {
   const card = createEl('div', { className: 'cgt-card cgt-output-section' });
-  card.appendChild(
-    createEl('div', {
-      className: 'cgt-output-label',
-      textContent: 'Expresión Cron',
-    })
-  );
 
-  const exprWrap = createEl('div', { className: 'cgt-expression' });
-  const code = createEl('div', {
-    className: 'cgt-expression-code',
-    textContent: '* * * * *',
-  });
+  const label = createEl('div', { className: 'cgt-output-label', textContent: 'Expresión Cron' });
+  card.appendChild(label);
+
+  const expressionWrapper = createEl('div', { className: 'cgt-expression' });
+  const code = createEl('div', { className: 'cgt-expression-code', textContent: '* * * * *' });
   const copyBtn = createEl('button', {
     type: 'button',
     className: 'cgt-copy-btn',
     textContent: 'Copiar',
-    listeners: { click: copyToClipboard },
+    listeners: {
+      click: () => copyToClipboard()
+    }
   });
-  exprWrap.appendChild(code);
-  exprWrap.appendChild(copyBtn);
-  card.appendChild(exprWrap);
+  expressionWrapper.appendChild(code);
+  expressionWrapper.appendChild(copyBtn);
+  card.appendChild(expressionWrapper);
 
   const descBox = createEl('div', { className: 'cgt-description-box' });
-  const descText = createEl('p', {
-    className: 'cgt-description-text',
-    textContent: 'Cada minuto',
-  });
+  const descText = createEl('p', { className: 'cgt-description-text', textContent: 'Cada minuto' });
   descBox.appendChild(descText);
   card.appendChild(descBox);
 
-  uiRefs = { expression: code, description: descText, copyBtn: copyBtn };
+  outputRefs = { expression: code, description: descText, copyBtn };
   return card;
 }
 
 // ==========================================
-// SINCRONIZACION
+// ACTUALIZACIÓN DE UI
 // ==========================================
 
-function updateFieldVisibility(fieldId) {
-  const chips = document.getElementById('chips-' + fieldId);
-  const interval = document.getElementById('interval-' + fieldId);
-  const isSpecific = state[fieldId].mode === 'specific';
-  const isStep = state[fieldId].mode === 'step';
-  if (chips) chips.classList.toggle('visible', isSpecific);
-  if (interval) interval.classList.toggle('visible', isStep);
-}
+function updateUI() {
+  const expr = buildCronExpression();
+  const desc = buildDescription();
 
-function updateAllControls() {
-  FIELD_META.forEach(function (fc) {
-    const select = document.querySelector('.cgt-field-select[data-field="' + fc.id + '"]');
-    if (select) select.value = state[fc.id].mode;
-
-    const chips = chipRefs[fc.id];
-    if (chips) {
-      chips.forEach(function (el, idx) {
-        const val = fc.min + idx;
-        el.classList.toggle('selected', state[fc.id].values.indexOf(val) >= 0);
-      });
-    }
-
-    const intervalDiv = document.getElementById('interval-' + fc.id);
-    if (intervalDiv) {
-      const input = intervalDiv.querySelector('input');
-      if (input) input.value = state[fc.id].step;
-    }
-
-    updateFieldVisibility(fc.id);
-  });
-}
-
-function updateDisplay() {
-  if (uiRefs.expression) uiRefs.expression.textContent = getCronExpression();
-  if (uiRefs.description) uiRefs.description.textContent = getDescription();
+  if (outputRefs.expression) {
+    outputRefs.expression.textContent = expr;
+  }
+  if (outputRefs.description) {
+    outputRefs.description.textContent = desc;
+  }
 }
 
 // ==========================================
-// COPIADO
+// COPIAR AL PORTAPAPELES
 // ==========================================
 
 async function copyToClipboard() {
-  if (!uiRefs.copyBtn || !uiRefs.expression) return;
+  const text = buildCronExpression();
   try {
-    await navigator.clipboard.writeText(uiRefs.expression.textContent);
-    const originalText = uiRefs.copyBtn.textContent;
+    await navigator.clipboard.writeText(text);
+    const originalText = outputRefs.copyBtn.textContent;
+    outputRefs.copyBtn.textContent = 'Copiado';
+    outputRefs.copyBtn.classList.add('copied');
 
-    uiRefs.copyBtn.textContent = 'Copiado';
-    uiRefs.copyBtn.classList.add('copied');
-
-    setTimeout(function () {
-      if (uiRefs.copyBtn) {
-        uiRefs.copyBtn.textContent = originalText;
-        uiRefs.copyBtn.classList.remove('copied');
-      }
+    setTimeout(() => {
+      outputRefs.copyBtn.textContent = originalText;
+      outputRefs.copyBtn.classList.remove('copied');
     }, 2000);
   } catch (err) {
-    // eslint-disable-next-line no-console
+    // Fallback silent error
     console.error('Error al copiar:', err);
   }
 }
 
 // ==========================================
-// ARRANQUE
+// INICIALIZACIÓN
 // ==========================================
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
   initApp();
 });
